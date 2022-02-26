@@ -6,16 +6,32 @@ using System.Threading.Tasks;
 
 namespace RSALab1
 {
-    //http://e-maxx.ru/algo/export_extended_euclid_algorithm
-
     /// <summary>
     /// Инструменты и функции для RSA
     /// </summary>
     public class Solver
     {
-        /// <summary>
-        /// Аогоритм Евлида. Реализация через остатки от деления.
-        /// </summary>
+        /// <summary> Список простых чисел до 1000  </summary>
+        public static List<int> Primes { get; private set; }
+
+        static Solver()
+        {
+            Primes = new List<int>();
+            int start = 2;
+            int end = 1000;
+            for (int i = start; i <= end; i++)
+            {
+                bool isPrime = true;
+                for (int j = 2; j < i; j++)
+                {
+                    if (i % j == 0 )
+                        isPrime = false;
+                }
+                if(isPrime) Primes.Add(i);
+            }
+        }
+
+        /// <summary> Аогоритм Евлида. Реализация через остатки от деления. </summary>
         /// <returns>Наибольший общий делитель a и b</returns>
         public static ByteNumber Gcd(ByteNumber fn, ByteNumber sn)
         {
@@ -61,15 +77,33 @@ namespace RSALab1
 
         public static void RSA()
         {
-            var p = new ByteNumber(3);
-            var q = new ByteNumber(7);
+            
+        }
+
+        /// <summary>Получить ключи для RSA шифрования</summary>
+        /// <param name="p">Простое число</param>
+        /// <param name="q">Простое число</param>
+        /// <returns>Две пары чисел. 1 - открытый ключ {e,n}. 2 - закрытый ключ {d,n}</returns>
+        public static Tuple<Tuple<ByteNumber, ByteNumber>, Tuple<ByteNumber, ByteNumber>> GetKeys(ByteNumber p, ByteNumber q)
+        {
             var n = p * q;
             var one = new ByteNumber(1);
+            var e = new ByteNumber(0);
+            var fi = (p - one) * (q - one); //функция Эйлера от n
+            for(int i = Primes.Count; i>=0; i--)
+            {
+                e = new ByteNumber(Primes[i]); // e - открытая экспонента. е<fi, простое и взаимнопростое с fi
+                var nod = Gcd(fi, e);
+                if (nod == one && e < fi)
+                    break;
+            }
 
-            var fi = (p - one) * (q - one);
-            var s = fi.ToInt();
+            var openKey = Tuple.Create(e,n);
+            var d = e.GetInverseModule(n);
+            var closedKey = Tuple.Create(d, n);
+
+            return Tuple.Create(openKey, closedKey);
         }
-        //http://fb3809fm.bget.ru/_csharp/157.php - нахождение простых 
     }
 
 }
