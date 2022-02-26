@@ -95,6 +95,9 @@ namespace RSALab1
             return num;
         }
 
+        /// <summary> Получить число, обратное по модулю </summary>
+        /// <param name="module"> Модуль</param>
+        /// <returns></returns>
         public ByteNumber GetInverseModule(ByteNumber module)
         {
             var x = new ByteNumber(0);
