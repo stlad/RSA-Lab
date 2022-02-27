@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using RSALab1;
+using System;
 
 namespace ByteNumTests
 {
@@ -25,6 +26,7 @@ namespace ByteNumTests
             Assert.AreEqual(num, number.ToInt());
         }
 
+       
 
         [TestCase(1,1)]
         [TestCase(-1,1)]
@@ -173,6 +175,19 @@ namespace ByteNumTests
             var res = fb / sb;
             Assert.AreEqual(a /b, res.ToInt());
         }
+
+        [TestCase(1,1)]
+        [TestCase(0,1)]
+        [TestCase(10, 0)]
+        [TestCase(5, 3)]
+        [TestCase(2, 10)]
+        public void PowerTest(int n, int pow)
+        {
+            var num = new ByteNumber(n);
+            var res = num.Power(pow);
+
+            Assert.AreEqual(Math.Pow((double)n, (double)pow),(double)res.ToInt());
+        }
     }
 
     public class SolverTests
@@ -191,6 +206,14 @@ namespace ByteNumTests
             var f = new ByteNumber(a);
             var s = new ByteNumber(b);
             Assert.AreEqual(res, Solver.Gcd(f,s).ToInt());
+        }
+
+        [TestCase("mama papa", 600,2)]
+        public void MsgParserTest(string msg, int n, int blockSize)
+        {
+            var n1 = new ByteNumber(n);
+            var res = Solver.ParseMessage(msg, n1);
+            Assert.AreEqual(blockSize, res[0].ByteCount);
         }
     }
 
