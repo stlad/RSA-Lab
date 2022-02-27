@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace RSALab1
 {
@@ -87,8 +88,10 @@ namespace RSALab1
         public static Tuple<Tuple<ByteNumber, ByteNumber>, Tuple<ByteNumber, ByteNumber>> GetKeys(ByteNumber p, ByteNumber q)
         {
             var n = p * q;
+            if (n <= new ByteNumber(256)) throw new Exception("p*q должно быть строго больше 256!");
             var one = new ByteNumber(1);
             var e = new ByteNumber(0);
+
             var fi = (p - one) * (q - one); //функция Эйлера от n
             for(int i = Primes.Count; i>=0; i--)
             {
@@ -103,6 +106,42 @@ namespace RSALab1
             var closedKey = Tuple.Create(d, n);
 
             return Tuple.Create(openKey, closedKey);
+        }
+
+        public static ByteNumber RSAEncryption(string msg, Tuple<ByteNumber, ByteNumber> openKey)
+        {
+            //E = msg^e (mod) n
+            var newMsg = new List<ByteNumber>();
+            var one = new ByteNumber(1);
+            var e = openKey.Item1;
+            var n = openKey.Item2;
+            var maxSize = new ByteNumber(n - one);
+
+            throw new NotImplementedException();
+        }
+
+        /// <summary> Разбивает сообщение на блоки и превращает блоки в числа < n </summary>
+        /// <returns>Список чисел, полученных после разбиения строки на блоки и перевод в числа</returns>
+        public static List<ByteNumber> ParseMessage(string msg, ByteNumber n)
+        {
+            var one = new ByteNumber(1);
+            var byteCount = (n - one).ByteCount; //количество байт (символов) в одном блоке
+            var res = new List<ByteNumber>();
+            var msgBytes = Encoding.ASCII.GetBytes(msg);
+            var buffer = new List<byte>();
+
+
+            for (int i = 0; i< msgBytes.Length; i++)
+            {
+                buffer.Add(msgBytes[i]);
+                if(((i+1)%byteCount == 0) || (i==msgBytes.Length-1))
+                {
+                    res.Add(new ByteNumber(false, buffer));
+                    buffer = new List<byte>();
+                }
+            }
+
+            return res;
         }
     }
 
