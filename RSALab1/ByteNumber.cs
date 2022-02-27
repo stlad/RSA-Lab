@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace RSALab1
 {
@@ -95,6 +96,7 @@ namespace RSALab1
             return num;
         }
 
+
         /// <summary> Получить число, обратное по модулю </summary>
         /// <param name="module"> Модуль</param>
         /// <returns></returns>
@@ -105,6 +107,17 @@ namespace RSALab1
             var nod = Solver.gcdExtended(this, module, ref x, ref y);
 
             return x;
+        }
+
+        /// <summary>Возведение в положительную степень</summary>
+        public ByteNumber Power(int power)
+        {
+            var res = new ByteNumber(1);
+            if (power < 0) throw new Exception("Только положительная степень!");
+            for (int i = 0; i < power; i++)
+                res = res * this;
+
+            return res;
         }
         public static ByteNumber operator +(ByteNumber a, ByteNumber b)
         {
