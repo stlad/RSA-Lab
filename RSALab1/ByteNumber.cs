@@ -112,9 +112,8 @@ namespace RSALab1
         {
             var res = new ByteNumber(1);
             var one = new ByteNumber(1);
-            int pow = power.ToInt();
-            if (pow < 0) throw new Exception("Только положительная степень!");
-            for (int i = 0; i < pow; i++)
+            if (power < new ByteNumber(0)) throw new Exception("Только положительная степень!");
+            for (var i = new ByteNumber(0); i < power; i = i + one)
             {
                 var buffer = res * this; 
                 res = buffer;
@@ -204,45 +203,58 @@ namespace RSALab1
             var zero = new ByteNumber(0);
             if (b == zero) throw new DivideByZeroException();
 
-            var bModule = new ByteNumber(b);
-            bModule.IsNegative = false;
+            //var bModule = new ByteNumber(b);
+            //bModule.IsNegative = false;
 
-            var res = new ByteNumber(a);
-            res.IsNegative = false;
-            var counter = new ByteNumber(0);
+            //var res = new ByteNumber(a);
+            //res.IsNegative = false;
+            //var counter = new ByteNumber(0);
+            //var one = new ByteNumber(1);
+
+            //while (res - bModule >= zero)
+            //{
+            //    res = res - bModule;
+            //    counter = counter + one;
+            //}
+            //counter.IsNegative = a.IsNegative;
+
+            //counter.IsNegative = b.IsNegative == a.IsNegative ? false : true;
+            //return counter;
+
+            var counter = new ByteNumber(0);                    //станет целой частью деления. 
             var one = new ByteNumber(1);
+            var res = new ByteNumber(0);
+            var startB = new ByteNumber(b);
+            startB.IsNegative = false;
+            var remainder = new ByteNumber(a); //здесь будет остаток от деления
+            remainder.IsNegative = false;
 
-            while (res - bModule >= zero)
+            while(remainder - startB >=zero)
             {
-                res = res - bModule;
-                counter = counter + one;
+                counter = new ByteNumber(0);
+                var prev = new ByteNumber(startB);
+                var next = prev.LeftBitShift();
+                while(next <= remainder)
+                {
+                    prev = next;
+                    next = next.LeftBitShift();
+                    counter = counter + one;
+                }
+                remainder = remainder - prev;
+                res = res + new ByteNumber(new ByteNumber(2).Power(counter));
             }
-            counter.IsNegative = a.IsNegative;
 
-            counter.IsNegative = b.IsNegative == a.IsNegative ? false : true;
-            return counter;
+            res.IsNegative = a.IsNegative == b.IsNegative ? false: true;
+            return res;
         }
         public static ByteNumber operator %(ByteNumber a, ByteNumber b)
         {
             var zero = new ByteNumber(0);
             if (b == zero) throw new DivideByZeroException();
-
-            var bModule = new ByteNumber(b);
-            bModule.IsNegative = false;
-
-            //var res = new ByteNumber(a);
-            //res.IsNegative = false;
-
-            //while (res - bModule >= zero)
-            //{
-            //    res = res - bModule;
-            //}
-            //res.IsNegative = a.IsNegative;
             //a = bx + r
 
             var div = a / b;
             var res = a - (b * div);
-
             return res;
         }
         public static bool operator >(ByteNumber a, ByteNumber b) //=> a.ToInt() > b.ToInt();
