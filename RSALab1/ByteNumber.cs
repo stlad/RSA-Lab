@@ -12,7 +12,7 @@ namespace RSALab1
     /// </summary>
     public class ByteNumber
     {
-        private List<byte> Number { get; set; }
+        public List<byte> Number { get; set; }
         public bool IsNegative { get; private set; }
         public byte this[int index]
         {
@@ -104,6 +104,12 @@ namespace RSALab1
             var y = new ByteNumber(0);
             var nod = RSA.gcdExtended(this, module, ref x, ref y);
 
+            if (x.IsNegative)
+            {
+                var res = x + module;
+                res.ClearEmptyBytes();
+                return res;
+            }
             return x;
         }
 
@@ -203,24 +209,6 @@ namespace RSALab1
             var zero = new ByteNumber(0);
             if (b == zero) throw new DivideByZeroException();
 
-            //var bModule = new ByteNumber(b);
-            //bModule.IsNegative = false;
-
-            //var res = new ByteNumber(a);
-            //res.IsNegative = false;
-            //var counter = new ByteNumber(0);
-            //var one = new ByteNumber(1);
-
-            //while (res - bModule >= zero)
-            //{
-            //    res = res - bModule;
-            //    counter = counter + one;
-            //}
-            //counter.IsNegative = a.IsNegative;
-
-            //counter.IsNegative = b.IsNegative == a.IsNegative ? false : true;
-            //return counter;
-
             var counter = new ByteNumber(0);                    //станет целой частью деления. 
             var one = new ByteNumber(1);
             var res = new ByteNumber(0);
@@ -249,13 +237,41 @@ namespace RSALab1
         }
         public static ByteNumber operator %(ByteNumber a, ByteNumber b)
         {
+            //var zero = new ByteNumber(0);
+            //if (b == zero) throw new DivideByZeroException();
+            ////a = bx + r
+
+            //var div = a / b;
+            //var res = a - (b * div);
+            //return res;
             var zero = new ByteNumber(0);
             if (b == zero) throw new DivideByZeroException();
-            //a = bx + r
 
-            var div = a / b;
-            var res = a - (b * div);
-            return res;
+            var counter = new ByteNumber(0);                    //станет целой частью деления. 
+            var one = new ByteNumber(1);
+            var res = new ByteNumber(0);
+            var startB = new ByteNumber(b);
+            startB.IsNegative = false;
+            var remainder = new ByteNumber(a); //здесь будет остаток от деления
+            remainder.IsNegative = false;
+
+            while (remainder - startB >= zero)
+            {
+                counter = new ByteNumber(0);
+                var prev = new ByteNumber(startB);
+                var next = prev.LeftBitShift();
+                while (next <= remainder)
+                {
+                    prev = next;
+                    next = next.LeftBitShift();
+                    counter = counter + one;
+                }
+                remainder = remainder - prev;
+                res = res + new ByteNumber(new ByteNumber(2).Power(counter));
+            }
+
+            remainder.IsNegative = a.IsNegative;
+            return remainder;
         }
         public static bool operator >(ByteNumber a, ByteNumber b) //=> a.ToInt() > b.ToInt();
         {

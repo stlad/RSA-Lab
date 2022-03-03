@@ -15,7 +15,7 @@ namespace RSALab1
         /// <summary> Список простых чисел до 1000  </summary>
         public static List<int> Primes { get; private set; }
 
-        //static Solver()
+        //static RSA()
         //{
         //    Primes = new List<int>();
         //    int start = 2;
@@ -25,10 +25,10 @@ namespace RSALab1
         //        bool isPrime = true;
         //        for (int j = 2; j < i; j++)
         //        {
-        //            if (i % j == 0 )
+        //            if (i % j == 0)
         //                isPrime = false;
         //        }
-        //        if(isPrime) Primes.Add(i);
+        //        if (isPrime) Primes.Add(i);
         //    }
         //}
 
@@ -77,7 +77,6 @@ namespace RSALab1
         }
 
 
-
         /// <summary>Получить ключи для RSA шифрования</summary>
         /// <param name="p">Простое число</param>
         /// <param name="q">Простое число</param>
@@ -90,16 +89,17 @@ namespace RSALab1
             var e = new ByteNumber(0);
 
             var fi = (p - one) * (q - one); //функция Эйлера от n
-            /*for(int i = Primes.Count-1; i>=0; i--)
-            {
-                e = new ByteNumber(Primes[i]); // e - открытая экспонента. е<fi, простое и взаимнопростое с fi
-                var nod = Gcd(fi, e);
-                if (nod == one && e < fi)
-                    break;
-            }*/
-            e = new ByteNumber(3); //пробный вариант для е=3
+            //for(int i = Primes.Count-1; i>=0; i--)
+            //{
+            //    e = new ByteNumber(Primes[i]); // e - открытая экспонента. е<fi, простое и взаимнопростое с fi
+            //    var nod = Gcd(fi, e);
+            //    if (nod == one && e < fi)
+            //        break;
+            //}
+            e = new ByteNumber(5); //пробный вариант для е=5
             var openKey = Tuple.Create(new ByteNumber(e),n);
-            var d = e.GetInverseModule(n);
+            var d = e.GetInverseModule(fi);
+
             var closedKey = Tuple.Create(d, n);
 
             return Tuple.Create(openKey, closedKey);
@@ -140,7 +140,9 @@ namespace RSALab1
             for(int i =0;i<codedMsg.Count;i++)
             {
                 var P = (codedMsg[i].Power(d));// % n;
+                var s = P / n;
                 P = P % n;
+                
                 decodedNum.Add(P);
             }
 
@@ -154,7 +156,7 @@ namespace RSALab1
         {
             var one = new ByteNumber(1);
             var zero = new ByteNumber(0);
-            var byteCount = (n - one).ByteCount; //количество байт (символов) в одном блоке
+            var byteCount = (n / new ByteNumber(256)).ToInt(); //количество байт (символов) в одном блоке
             var res = new List<ByteNumber>();
             var msgBytes = Encoding.ASCII.GetBytes(msg);
             //var msgNum = new ByteNumber(false, msgBytes);
