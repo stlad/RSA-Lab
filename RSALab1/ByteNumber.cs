@@ -42,7 +42,6 @@ namespace RSALab1
             }
 
         }
-
         public ByteNumber(long num)
         {
             IsNegative = num < 0 ? true : false;
@@ -76,7 +75,6 @@ namespace RSALab1
         {
             IsNegative = false;
             Number = new List<byte>();
-            Number.Add(0);
         }
 
         /// <summary>
@@ -104,21 +102,57 @@ namespace RSALab1
         {
             var x = new ByteNumber(0);
             var y = new ByteNumber(0);
-            var nod = Solver.gcdExtended(this, module, ref x, ref y);
+            var nod = RSA.gcdExtended(this, module, ref x, ref y);
 
             return x;
         }
 
         /// <summary>Возведение в положительную степень</summary>
-        public ByteNumber Power(int power)
+        public ByteNumber Power(ByteNumber power)
         {
             var res = new ByteNumber(1);
-            if (power < 0) throw new Exception("Только положительная степень!");
-            for (int i = 0; i < power; i++)
-                res = res * this;
+            var one = new ByteNumber(1);
+            int pow = power.ToInt();
+            if (pow < 0) throw new Exception("Только положительная степень!");
+            for (int i = 0; i < pow; i++)
+            {
+                var buffer = res * this; 
+                res = buffer;
+            }
 
             return res;
         }
+
+        public ByteNumber LeftBitShift()
+        {
+            var num = new ByteNumber();
+            num.IsNegative = this.IsNegative;
+            var buffer = 0;
+            for (int i = 0; i <= this.ByteCount; i++)
+            {
+                var newNum = i == this.ByteCount ? 0 : (this[i] << 1);
+                num.Number.Add((byte)(newNum+buffer));
+                buffer = newNum / 256;
+            }
+            num.ClearEmptyBytes();
+            return num;
+        }
+        public ByteNumber RightBitShift()
+        {
+            var num = new ByteNumber();
+            num.IsNegative = this.IsNegative;
+            var buffer = 0;
+            for (int i = 0; i < this.ByteCount; i++)
+            {
+                var newNum = this.Number[i] >> 1;
+                buffer = i==this.ByteCount-1 ? 0: (this.Number[i + 1] % 2)*128;
+                num.Number.Add((byte)(newNum + buffer));
+
+            }
+            num.ClearEmptyBytes();
+            return num;
+        }
+
         public static ByteNumber operator +(ByteNumber a, ByteNumber b)
         {
             var res = new ByteNumber();
@@ -145,16 +179,24 @@ namespace RSALab1
         }
         public static ByteNumber operator *(ByteNumber a, ByteNumber b)
         {
-            var bModule = new ByteNumber(b);
-            bModule.IsNegative = false;
-            var intBModule = bModule.ToInt();
             var res = new ByteNumber(0);
-            for (int i = 0; i < intBModule; i++)
-                res = res + a;
+            var newA = new ByteNumber(a);
+            newA.IsNegative = false;
+            
+            var newB = new ByteNumber(b);
+            newB.IsNegative = false;
+            var zero = new ByteNumber(0);
 
-
-            res.IsNegative = b.IsNegative == a.IsNegative ? false : true;
-
+            var bit = 0;
+            while(newB > zero)
+            {
+                bit = newB.Number[0] % 2; // все равно, что остаток от деления всего числа
+                if (bit == 1)
+                    res = res + newA;
+                newB = newB.RightBitShift();
+                newA = newA.LeftBitShift();
+            }
+            res.IsNegative = a.IsNegative == b.IsNegative ? false: true;
             return res;
         }
         public static ByteNumber operator /(ByteNumber a, ByteNumber b)
@@ -188,14 +230,18 @@ namespace RSALab1
             var bModule = new ByteNumber(b);
             bModule.IsNegative = false;
 
-            var res = new ByteNumber(a);
-            res.IsNegative = false;
+            //var res = new ByteNumber(a);
+            //res.IsNegative = false;
 
-            while (res - bModule >= zero)
-            {
-                res = res - bModule;
-            }
-            res.IsNegative = a.IsNegative;
+            //while (res - bModule >= zero)
+            //{
+            //    res = res - bModule;
+            //}
+            //res.IsNegative = a.IsNegative;
+            //a = bx + r
+
+            var div = a / b;
+            var res = a - (b * div);
 
             return res;
         }
@@ -227,7 +273,6 @@ namespace RSALab1
         public static bool operator <=(ByteNumber a, ByteNumber b) => a < b || a == b;
         public static bool operator==(ByteNumber a, ByteNumber b) => a.IsNegative == b.IsNegative && ModuleComparision(a, b) == 0; //=> a.ToInt() == b.ToInt();
         public static bool operator!=(ByteNumber a, ByteNumber b) => !(a == b); //=> a.ToInt() != b.ToInt();
-
 
         /// <summary>
         /// Вспомогательный метод сравнения без учета знака
@@ -328,5 +373,7 @@ namespace RSALab1
                     break;
             }
         }
+
+        public byte[] ToByteArray() => Number.ToArray();
     }
 }
