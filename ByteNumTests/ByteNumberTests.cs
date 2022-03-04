@@ -129,6 +129,7 @@ namespace ByteNumTests
         [TestCase(-10, -5)]
         [TestCase(-1, -5)]
         [TestCase(256, 4)]
+        [TestCase(65428, 354)]
         public void MultiTest(int a, int b)
         {
             var fb = new ByteNumber(a);
@@ -142,13 +143,17 @@ namespace ByteNumTests
         [TestCase(0, 1)]
         [TestCase(10, -1)]
         [TestCase(0, 10)]
+        [TestCase(0, -10)]
         [TestCase(-10, -10)]
         [TestCase(-10, 20)]
         [TestCase(10, 20)]
         [TestCase(10, 5)]
         [TestCase(654, 34)]
+        [TestCase(6532544, 564)]
         [TestCase(-654, -34)]
         [TestCase(-256, 452)]
+        [TestCase(5854, -28)]
+        [TestCase(258, 2)]
         public void ModTest(int a, int b)
         {
             var fb = new ByteNumber(a);
@@ -161,13 +166,16 @@ namespace ByteNumTests
         [TestCase(0, 1)]
         [TestCase(10, -1)]
         [TestCase(0, 10)]
+        [TestCase(0, -10)]
         [TestCase(-10, -10)]
         [TestCase(-10, 20)]
         [TestCase(10, 20)]
         [TestCase(10, 5)]
         [TestCase(654, 34)]
+        [TestCase(6532544, 564)]
         [TestCase(-654, -34)]
         [TestCase(-256, 452)]
+        [TestCase(5854, -28)]
         public void DivideTest(int a, int b)
         {
             var fb = new ByteNumber(a);
@@ -184,9 +192,47 @@ namespace ByteNumTests
         public void PowerTest(int n, int pow)
         {
             var num = new ByteNumber(n);
-            var res = num.Power(pow);
+            var bytePower = new ByteNumber(pow);
+            var res = num.Power(bytePower);
 
             Assert.AreEqual(Math.Pow((double)n, (double)pow),(double)res.ToInt());
+        }
+
+        [TestCase(0)]
+        [TestCase(123)]
+        [TestCase(23)]
+        [TestCase(1)]
+        [TestCase(-1)]
+        [TestCase(-123)]
+        [TestCase(256)]
+        [TestCase(128)]
+        [TestCase(129837)]
+        [TestCase(-23123)]
+        public void LeftBitShiftTest(int a)
+        {
+            var n = new ByteNumber(a);
+            var d = n.LeftBitShift();
+
+            Assert.AreEqual(d.ToInt(), a << 1);
+        }
+
+
+        [TestCase(0)]
+        [TestCase(123)]
+        [TestCase(23)]
+        [TestCase(1)]
+        [TestCase(-1)]
+        [TestCase(-123)]
+        [TestCase(256)]
+        [TestCase(128)]
+        [TestCase(129837)]
+        [TestCase(-23123)]
+        public void RightBitShiftTest(int a)
+        {
+            var n = new ByteNumber(a);
+            var d = n.RightBitShift();
+
+            Assert.AreEqual(d.ToInt(), a >> 1);
         }
     }
 
@@ -205,14 +251,14 @@ namespace ByteNumTests
         {
             var f = new ByteNumber(a);
             var s = new ByteNumber(b);
-            Assert.AreEqual(res, Solver.Gcd(f,s).ToInt());
+            Assert.AreEqual(res, RSA.Gcd(f,s).ToInt());
         }
 
         [TestCase("mama papa", 600,2)]
         public void MsgParserTest(string msg, int n, int blockSize)
         {
             var n1 = new ByteNumber(n);
-            var res = Solver.ParseMessage(msg, n1);
+            var res = RSA.ParseMessage(msg, n1);
             Assert.AreEqual(blockSize, res[0].ByteCount);
         }
     }
