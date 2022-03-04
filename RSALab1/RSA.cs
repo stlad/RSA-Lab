@@ -15,22 +15,27 @@ namespace RSALab1
         /// <summary> Список простых чисел до 1000  </summary>
         public static List<int> Primes { get; private set; }
 
-        //static RSA()
-        //{
-        //    Primes = new List<int>();
-        //    int start = 2;
-        //    int end = 1000;
-        //    for (int i = start; i <= end; i++)
-        //    {
-        //        bool isPrime = true;
-        //        for (int j = 2; j < i; j++)
-        //        {
-        //            if (i % j == 0)
-        //                isPrime = false;
-        //        }
-        //        if (isPrime) Primes.Add(i);
-        //    }
-        //}
+        static RSA(){Primes = new List<int>();}
+
+        /// <summary>
+        /// Вспомогательный метод для установки простых чисел до 1000. Нужен для отбора е. В реализации текущей НЕ ИСПОЛЬЗУЕТСЯ!!
+        /// </summary>
+        public static void SetPrimes()
+        {
+            Primes = new List<int>();
+            int start = 2;
+            int end = 1000;
+            for (int i = start; i <= end; i++)
+            {
+                bool isPrime = true;
+                for (int j = 2; j < i; j++)
+                {
+                    if (i % j == 0)
+                        isPrime = false;
+                }
+                if (isPrime) Primes.Add(i);
+            }
+        }
 
         /// <summary> Аогоритм Евлида. Реализация через остатки от деления. </summary>
         /// <returns>Наибольший общий делитель a и b</returns>
@@ -140,7 +145,6 @@ namespace RSALab1
             for(int i =0;i<codedMsg.Count;i++)
             {
                 var P = (codedMsg[i].Power(d));// % n;
-                var s = P / n;
                 P = P % n;
                 
                 decodedNum.Add(P);
