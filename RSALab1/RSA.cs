@@ -89,7 +89,7 @@ namespace RSALab1
         public static Tuple<Tuple<ByteNumber, ByteNumber>, Tuple<ByteNumber, ByteNumber>> GetKeys(ByteNumber p, ByteNumber q)
         {
             var n = p * q;
-            if (n <= new ByteNumber(256)) throw new Exception("p*q должно быть строго больше 256!");
+            if (n <= new ByteNumber(256)/*256*/) throw new Exception("p*q должно быть строго больше 256!");
             var one = new ByteNumber(1);
             var e = new ByteNumber(0);
 
@@ -120,7 +120,7 @@ namespace RSALab1
             var e = openKey.Item1;
             var n = openKey.Item2;
 
-            var parsedMsg = ParseMessage(msg, n);
+            var parsedMsg = ParseMessage(msg);
             var newMsg = new List<ByteNumber>();
 
             for(int i = 0; i< parsedMsg.Count; i++)
@@ -134,8 +134,12 @@ namespace RSALab1
         }
 
 
-
-        public static string Decode(List<ByteNumber> codedMsg, Tuple<ByteNumber, ByteNumber> secretKey)
+        /// <summary>
+        /// Декодировать сообщения по закрытому ключу
+        /// </summary>
+        /// <param name="codedMsg"></param>
+        /// <param name="secretKey"></param>
+        public static List<ByteNumber> Decode(List<ByteNumber> codedMsg, Tuple<ByteNumber, ByteNumber> secretKey)
         {
             //P = E^d(mod n)
             var d = secretKey.Item1;
@@ -150,37 +154,28 @@ namespace RSALab1
                 decodedNum.Add(P);
             }
 
-            return DecodedMsgToString(decodedNum);
+            return decodedNum;
         }
 
 
-        /// <summary> Разбивает сообщение на блоки и превращает блоки в числа < n </summary>
+        /// <summary> Разбивает сообщение на блоки и превращает блоки в числа. 
+        /// В ТЕКУЩЕЙ РЕАЛИЗАЦИИ БЛОКИ ПО ОДНОМУ БАЙТУ (кодировка ASCII)</summary>
         /// <returns>Список чисел, полученных после разбиения строки на блоки и перевод в числа</returns>
-        public static List<ByteNumber> ParseMessage(string msg, ByteNumber n)
+        public static List<ByteNumber> ParseMessage(string msg)
         {
-            var one = new ByteNumber(1);
-            var zero = new ByteNumber(0);
-            var byteCount = (n / new ByteNumber(256)).ToInt(); //количество байт (символов) в одном блоке
+            var msgBytes =  Encoding.ASCII.GetBytes(msg);
             var res = new List<ByteNumber>();
-            var msgBytes = Encoding.ASCII.GetBytes(msg);
-            //var msgNum = new ByteNumber(false, msgBytes);
-            var buffer = new List<byte>();
-
-
-            for (int i = 0; i < msgBytes.Length; i++)
+            for(int i = 0; i< msgBytes.Length; i++)
             {
-                buffer.Add(msgBytes[i]);
-                if (((i + 1) % byteCount == 0) || (i == msgBytes.Length - 1))
-                {
-                    res.Add(new ByteNumber(false, buffer));
-                    buffer = new List<byte>();
-                }
+                var buffer = new List<byte>() { msgBytes[i]};
+                var btNum = new ByteNumber(false, buffer) ;
+                res.Add(btNum);
             }
-
             return res;
         }
 
-        public static string DecodedMsgToString(List<ByteNumber> msg)
+        /// <summary> Преобразует массив чисел как строку. В ТЕКУЩЕЙ РЕАЛИЗАЦИИ ASCII </summary>
+        public static string MsgToString(List<ByteNumber> msg)
         {
             var decodedMsg = new StringBuilder();
             foreach(var msgItem in msg)
