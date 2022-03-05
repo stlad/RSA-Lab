@@ -86,22 +86,14 @@ namespace RSALab1
         /// <param name="p">Простое число</param>
         /// <param name="q">Простое число</param>
         /// <returns>Две пары чисел. 1 - открытый ключ {e,n}. 2 - закрытый ключ {d,n}</returns>
-        public static Tuple<Tuple<ByteNumber, ByteNumber>, Tuple<ByteNumber, ByteNumber>> GetKeys(ByteNumber p, ByteNumber q)
+        public static Tuple<Tuple<ByteNumber, ByteNumber>, Tuple<ByteNumber, ByteNumber>> GetKeys(ByteNumber p, ByteNumber q, ByteNumber e)
         {
             var n = p * q;
-            if (n <= new ByteNumber(256)/*256*/) throw new Exception("p*q должно быть строго больше 256!");
+            if (n <= new ByteNumber(256)) throw new Exception("p*q должно быть строго больше 256!");
             var one = new ByteNumber(1);
-            var e = new ByteNumber(0);
 
             var fi = (p - one) * (q - one); //функция Эйлера от n
-            //for(int i = Primes.Count-1; i>=0; i--)
-            //{
-            //    e = new ByteNumber(Primes[i]); // e - открытая экспонента. е<fi, простое и взаимнопростое с fi
-            //    var nod = Gcd(fi, e);
-            //    if (nod == one && e < fi)
-            //        break;
-            //}
-            e = new ByteNumber(5); //пробный вариант для е=5
+
             var openKey = Tuple.Create(new ByteNumber(e),n);
             var d = e.GetInverseModule(fi);
 
@@ -144,6 +136,8 @@ namespace RSALab1
             //P = E^d(mod n)
             var d = secretKey.Item1;
             var n = secretKey.Item2;
+
+            //var codedMsg = ParseMessage(msg);
 
             var decodedNum = new List<ByteNumber>();
             for(int i =0;i<codedMsg.Count;i++)

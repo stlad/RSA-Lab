@@ -13,7 +13,7 @@ namespace RSALab1
     public class ByteNumber
     {
         public List<byte> Number { get; set; }
-        public bool IsNegative { get; private set; }
+        public bool IsNegative { get; set; }
         public byte this[int index]
         {
             get
@@ -241,41 +241,13 @@ namespace RSALab1
         }
         public static ByteNumber operator %(ByteNumber a, ByteNumber b)
         {
-            //var zero = new ByteNumber(0);
-            //if (b == zero) throw new DivideByZeroException();
+            var zero = new ByteNumber(0);
+            if (b == zero) throw new DivideByZeroException();
             ////a = bx + r
 
             var div = a / b;
             var res = a - (b * div);
             return res;
-            //var zero = new ByteNumber(0);
-            //if (b == zero) throw new DivideByZeroException();
-
-            //var counter = new ByteNumber(0);                    //станет целой частью деления. 
-            //var one = new ByteNumber(1);
-            //var res = new ByteNumber(0);
-            //var startB = new ByteNumber(b);
-            //startB.IsNegative = false;
-            //var remainder = new ByteNumber(a); //здесь будет остаток от деления
-            //remainder.IsNegative = false;
-
-            //while (remainder - startB >= zero)
-            //{
-            //    counter = new ByteNumber(0);
-            //    var prev = new ByteNumber(startB);
-            //    var next = prev.LeftBitShift();
-            //    while (next <= remainder)
-            //    {
-            //        prev = next;
-            //        next = next.LeftBitShift();
-            //        counter = counter + one;
-            //    }
-            //    remainder = remainder - prev;
-            //    res = res + new ByteNumber(new ByteNumber(2).Power(counter));
-            //}
-
-            //remainder.IsNegative = a.IsNegative;
-            //return remainder;
         }
         public static bool operator >(ByteNumber a, ByteNumber b) //=> a.ToInt() > b.ToInt();
         {
