@@ -254,13 +254,13 @@ namespace ByteNumTests
             Assert.AreEqual(res, RSA.Gcd(f,s).ToInt());
         }
 
-        [TestCase("mama papa", 600,2)]
-        public void MsgParserTest(string msg, int n, int blockSize)
-        {
-            var n1 = new ByteNumber(n);
-            var res = RSA.ParseMessage(msg, n1);
-            Assert.AreEqual(blockSize, res[0].ByteCount);
-        }
+        //[TestCase("mama papa", 600,2)]
+        //public void MsgParserTest(string msg, int n, int blockSize)
+        //{
+        //    var n1 = new ByteNumber(n);
+        //    var res = RSA.ParseMessage(msg, n1);
+        //    Assert.AreEqual(blockSize, res[0].ByteCount);
+        //}
     }
 
 }
