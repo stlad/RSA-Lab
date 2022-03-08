@@ -81,11 +81,31 @@ namespace RSALab1
             Console.WriteLine("Шифрование алгоритмом RSA");
             Console.WriteLine("Обратите внимание, что шифровние текта в однобайтной кодировке ASCII");
 
-            Console.WriteLine("Введите текст для шифрования:");
+            var msg = "";
 
-            var msg = Console.ReadLine();
 
-            Console.WriteLine("\nВведите открытй ключ:");
+
+
+
+            Console.WriteLine("\n\nОткуда взять текст? [1] - Файл, [2] - Ручной ввод");
+            var com = Console.ReadLine();
+            if(com[0]=='1')
+            {
+                Console.WriteLine("Введите название файла: ");
+                var textFileName = Console.ReadLine();
+                var textFile = new System.IO.StreamReader(textFileName);
+                msg = textFile.ReadLine();
+                Console.WriteLine($"Текст: {msg}");
+                textFile.Close();
+            }
+            else
+            {
+                Console.WriteLine("Введите текст для шифрования:");
+                msg = Console.ReadLine();
+            }
+
+
+            Console.WriteLine("\nВведите открытый ключ:");
             Console.Write("e = ");
             int e = int.Parse(Console.ReadLine()); 
             Console.Write("n = ");
@@ -98,12 +118,12 @@ namespace RSALab1
             Console.WriteLine(RSA.MsgToString(codedMsg));
 
             Console.WriteLine("Введите название файла для записи сообщения (.xml):");
-            var fileName = Console.ReadLine();
+            var xmlFileName = Console.ReadLine();
 
             var writer = new System.Xml.Serialization.XmlSerializer(typeof(List<ByteNumber>));
-            var file= new System.IO.StreamWriter(fileName);
-            writer.Serialize(file, codedMsg);
-            file.Close();
+            var xmlFile= new System.IO.StreamWriter(xmlFileName);
+            writer.Serialize(xmlFile, codedMsg);
+            xmlFile.Close();
 
 
             Console.WriteLine("\n\n\n...Нажмите любую кнопку, чтобы вернуться...");
@@ -138,9 +158,17 @@ namespace RSALab1
             var closedKey = Tuple.Create(new ByteNumber(d), new ByteNumber(n));
 
 
-
-
+            Console.Write("\n\n\nрасшифровка....");
             var decodedMsg = RSA.Decode(codedMsg, closedKey);
+            Console.Write("  Готово!\n");
+
+
+            Console.WriteLine("Введите название файла, куда будет сдублирован декодированный текст:");
+            var textFileName = Console.ReadLine();
+            var textFile = new System.IO.StreamWriter(textFileName);
+            textFile.Write(RSA.MsgToString(decodedMsg));
+            textFile.Close();
+
             Console.WriteLine("\n\nРаскодированное сообщение: ");
             Console.WriteLine(RSA.MsgToString(decodedMsg));
 
